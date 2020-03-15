@@ -1,0 +1,10 @@
+@relation mlshop
+
+@attribute date date "yyyy-MM-dd"
+@attribute itemName ?1
+@attribute size {s,m,l,xl,2xl,3xl,4xl,5xl}
+@attribute quantity numeric
+
+@data
+?3
+

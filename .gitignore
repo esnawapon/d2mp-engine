@@ -56,3 +56,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+.DS_STORE
+
+*.xls

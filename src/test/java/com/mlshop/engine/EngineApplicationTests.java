@@ -1,4 +1,4 @@
-package com.d2mp.engine;
+package com.mlshop.engine;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
