@@ -6,11 +6,19 @@ import lombok.Data;
 public class Record {
     private String date;
     private String itemName;
-    private Double quantity;
     private String size;
+    private Double quantity;
+
+    public Record() {}
+    public Record(String date, String itemName, String size, Double quantity) {
+        this.date = date;
+        this.itemName = itemName;
+        this.size = size;
+        this.quantity = quantity;
+    }
 
     public String getUniqueKey() {
-        return itemName + "|" + size;
+        return date + "|" + itemName + "|" + size;
     }
 
     public void merge(Record record) {

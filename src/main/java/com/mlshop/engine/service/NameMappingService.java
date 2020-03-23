@@ -77,7 +77,7 @@ public class NameMappingService {
         return results;
     }
 
-    public int itemNameSize() throws IOException {
+    public int itemNameLength() throws IOException {
         return getItemNameMappings().size();
     }
 }
