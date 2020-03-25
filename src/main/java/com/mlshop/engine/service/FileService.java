@@ -21,7 +21,7 @@ import java.util.stream.IntStream;
 @Service
 public class FileService {
     @Autowired
-    NameMappingService nameMappingService;
+    MetaDataService metaDataService;
 
     public String transformAll() throws IOException {
         String[] fileNames = new String[] {
@@ -36,7 +36,7 @@ public class FileService {
                 "201909.xls",
                 "201910.xls",
                 "201911.xls",
-                "201912.xls"
+                "201912.xls",
         };
         List<Record> records = new ArrayList();
         for (String fileName: fileNames) {
@@ -97,6 +97,7 @@ public class FileService {
         }
         record.setItemName(ExcelUtils.getStringFromCell(row.getCell(ColumnIndex.ITEM_NAME)).toLowerCase());
         record.setQuantity(ExcelUtils.getDoubleFromCell(row.getCell(ColumnIndex.QUANTITY)));
+        record.setUnitPrice(ExcelUtils.getDoubleFromCell(row.getCell(ColumnIndex.SELL_PRICE)));
         String option = ExcelUtils.getStringFromCell(row.getCell(ColumnIndex.OPTION)).toLowerCase();
         if (option != null) {
             String[] options = option.split(",");
@@ -119,7 +120,7 @@ public class FileService {
                 stringBuffer.append(charArray, 0, numCharsRead);
             }
             String header = stringBuffer.toString();
-            header = header.replace("?1", ArffUtils.genNominalTypeFromZeroTo(nameMappingService.itemNameLength()));
+            header = header.replace("?1", ArffUtils.genNominalTypeFromZeroTo(metaDataService.itemLength()));
             header = header.replace("?2", ArffUtils.genNominalTypeFromArray(Constant.SIZES));
             return header;
         } catch (IOException e) {
@@ -132,10 +133,10 @@ public class FileService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss");
         String fileName = "/temp-" + sdf.format(Calendar.getInstance().getTime()) + ".arff";
         String filePath = Constant.DIR_NAME_ARFF + fileName;
-        final Map<String, Integer> nameMapping = nameMappingService.mapItemNameToResource(records.stream().map(e -> e.getItemName()).collect(Collectors.toSet()));
-        records.stream().forEach(e -> {
-            e.setItemName(String.valueOf(nameMapping.get(e.getItemName())));
-        });
+
+        metaDataService.updateMetaData(records);
+
+        records.stream().forEach(e -> e.setItemName(metaDataService.getIndex(e.getItemName()).toString()));
         String content = header + ArffUtils.toArffRecords(records);
         File result = writeReplaceFile(filePath, content);
         return result;
@@ -156,7 +157,7 @@ public class FileService {
     }
 
     public File writePredictArff(String header) throws IOException {
-        int itemLength = nameMappingService.itemNameLength();
+        int itemLength = metaDataService.itemLength();
         List<Record> allCombinations = DataUtils.genDateFromNow(Constant.MONTH_PREDICTION_LENGTH + 1)
             .stream()
             .map(date -> IntStream.range(0, itemLength)

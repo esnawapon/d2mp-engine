@@ -7,7 +7,7 @@ public class Constant {
     public static final String DIR_NAME_PREDICT = DIR_NAME_MAIN + "/predict";
     public static final String DIR_NAME_MAPPING = DIR_NAME_MAIN + "/mapping";
     public static final String FILE_NAME_TEMPLATE = DIR_NAME_ARFF + "/template.arff";
-    public static final String FILE_NAME_ITEM_MAPPING = DIR_NAME_MAPPING + "/itemNameMapping.json";
+    public static final String FILE_NAME_META_DATA = DIR_NAME_MAPPING + "/meta-data.json";
     public static final String FILE_NAME_MAIN_MODEL = DIR_NAME_MODEL + "/main-model.mlshop";
     public static final String FILE_NAME_MAIN_PREDICT = DIR_NAME_PREDICT + "/main-predict.arff";
     public static final String[] SIZES = new String[] {"s","m","l","xl","2xl","3xl","4xl"};

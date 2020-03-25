@@ -8,6 +8,7 @@ public class Record {
     private String itemName;
     private String size;
     private Double quantity;
+    private Double unitPrice;
 
     public Record() {}
     public Record(String date, String itemName, String size, Double quantity) {
