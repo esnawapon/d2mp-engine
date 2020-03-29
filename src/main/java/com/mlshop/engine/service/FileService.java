@@ -140,7 +140,7 @@ public class FileService {
             String header = stringBuffer.toString();
             header = header.replace("?1", ArffUtils.genNominalTypeFromCollection(Arrays.asList(Constant.SIZES)));
             header = header.replace("?2", ArffUtils.genOneHotAttributesHeader(itemNameKeyService.getAttributeNames()));
-//            header = header.replace("?3", ArffUtils.genNominalTypeFromCollection(quantityRangeService.getIndexes()));
+            header = header.replace("?3", ArffUtils.genNominalTypeFromCollection(quantityRangeService.getIndexes()));
             return header;
         } catch (IOException e) {
             System.out.println("Cannot read template");

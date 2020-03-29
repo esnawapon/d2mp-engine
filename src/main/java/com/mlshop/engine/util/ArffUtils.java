@@ -30,11 +30,11 @@ public class ArffUtils {
 
     public static String toArffRecord(Record record, List<String> attributeNames) {
         StringBuilder sb = new StringBuilder();
-        sb.append(record.getDate()).append(",");
+//        sb.append(record.getDate()).append(",");
         sb.append(record.getSize() == null ? "" : record.getSize()).append(",");
         sb.append(genOneHotAttributesRecord(attributeNames, record.getActiveKeyAttributes())).append(",");
-        sb.append(record.getQuantity() == null ? "?" : record.getQuantity());
-//        sb.append(record.getQuantityRange() == null ? "?" : record.getQuantityRange());
+//        sb.append(record.getQuantity() == null ? "?" : record.getQuantity());
+        sb.append(record.getQuantityRange() == null ? "?" : record.getQuantityRange());
         return sb.toString();
     }
 }
