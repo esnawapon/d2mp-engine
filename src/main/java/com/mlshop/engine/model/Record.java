@@ -2,6 +2,8 @@ package com.mlshop.engine.model;
 
 import lombok.Data;
 
+import java.util.Set;
+
 @Data
 public class Record {
     private String date;
@@ -9,6 +11,9 @@ public class Record {
     private String size;
     private Double quantity;
     private Double unitPrice;
+
+    private Set<String> activeKeyAttributes;
+    private Integer quantityRange;
 
     public Record() {}
     public Record(String date, String itemName, String size, Double quantity) {

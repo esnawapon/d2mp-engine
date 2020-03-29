@@ -3,7 +3,6 @@ package com.mlshop.engine.util;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class DataUtils {
@@ -25,6 +24,5 @@ public class DataUtils {
             results.add(sdf.format(now.getTime()));
         }
         return results;
-
     }
 }

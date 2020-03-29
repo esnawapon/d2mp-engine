@@ -22,6 +22,10 @@ import java.util.stream.IntStream;
 public class FileService {
     @Autowired
     MetaDataService metaDataService;
+    @Autowired
+    ItemNameKeyService itemNameKeyService;
+    @Autowired
+    QuantityRangeService quantityRangeService;
 
     public String transformAll() throws IOException {
         String[] fileNames = new String[] {
@@ -42,6 +46,20 @@ public class FileService {
         for (String fileName: fileNames) {
             records.addAll(transformExcelToRecords(fileName));
         }
+
+        Map<String, List<Record>> groupped = records.stream().collect(Collectors.groupingBy(e -> e.getDate()));
+        groupped.entrySet().stream().forEach(e -> {
+            System.out.println("===================");
+            System.out.println(e.getKey());
+            Double max = e.getValue().stream().mapToDouble(ea -> ea.getQuantity()).max().getAsDouble();
+            Double min = e.getValue().stream().mapToDouble(ea -> ea.getQuantity()).min().getAsDouble();
+            System.out.println("max:" + max);
+            System.out.println("min:" + min);
+        });
+
+        itemNameKeyService.updateItemNameKeys(records);
+        metaDataService.updateMetaData(records);
+        quantityRangeService.classifyRange(records);
 
         // write file
         String header = genArffHeader();
@@ -120,8 +138,9 @@ public class FileService {
                 stringBuffer.append(charArray, 0, numCharsRead);
             }
             String header = stringBuffer.toString();
-            header = header.replace("?1", ArffUtils.genNominalTypeFromZeroTo(metaDataService.itemLength()));
-            header = header.replace("?2", ArffUtils.genNominalTypeFromArray(Constant.SIZES));
+            header = header.replace("?1", ArffUtils.genNominalTypeFromCollection(Arrays.asList(Constant.SIZES)));
+            header = header.replace("?2", ArffUtils.genOneHotAttributesHeader(itemNameKeyService.getAttributeNames()));
+//            header = header.replace("?3", ArffUtils.genNominalTypeFromCollection(quantityRangeService.getIndexes()));
             return header;
         } catch (IOException e) {
             System.out.println("Cannot read template");
@@ -134,10 +153,7 @@ public class FileService {
         String fileName = "/temp-" + sdf.format(Calendar.getInstance().getTime()) + ".arff";
         String filePath = Constant.DIR_NAME_ARFF + fileName;
 
-        metaDataService.updateMetaData(records);
-
-        records.stream().forEach(e -> e.setItemName(metaDataService.getIndex(e.getItemName()).toString()));
-        String content = header + ArffUtils.toArffRecords(records);
+        String content = header + ArffUtils.toArffRecords(records, itemNameKeyService.getAttributeNames());
         File result = writeReplaceFile(filePath, content);
         return result;
     }
@@ -168,7 +184,8 @@ public class FileService {
                 .collect(Collectors.toList())
             ).flatMap(List::stream)
             .collect(Collectors.toList());
-        String content = header + ArffUtils.toArffRecords(allCombinations);
+//        String content = header + ArffUtils.toArffRecords(allCombinations);
+        String content = header;
         File result = writeReplaceFile(Constant.FILE_NAME_MAIN_PREDICT, content);
         return result;
     }
