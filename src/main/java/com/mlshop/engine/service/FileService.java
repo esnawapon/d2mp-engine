@@ -2,6 +2,7 @@ package com.mlshop.engine.service;
 
 import com.mlshop.engine.Constant;
 import com.mlshop.engine.Constant.ColumnIndex;
+import com.mlshop.engine.model.MetaData;
 import com.mlshop.engine.model.Record;
 import com.mlshop.engine.util.ArffUtils;
 import com.mlshop.engine.util.DataUtils;
@@ -16,7 +17,6 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Service
 public class FileService {
@@ -46,16 +46,6 @@ public class FileService {
         for (String fileName: fileNames) {
             records.addAll(transformExcelToRecords(fileName));
         }
-
-        Map<String, List<Record>> groupped = records.stream().collect(Collectors.groupingBy(e -> e.getDate()));
-        groupped.entrySet().stream().forEach(e -> {
-            System.out.println("===================");
-            System.out.println(e.getKey());
-            Double max = e.getValue().stream().mapToDouble(ea -> ea.getQuantity()).max().getAsDouble();
-            Double min = e.getValue().stream().mapToDouble(ea -> ea.getQuantity()).min().getAsDouble();
-            System.out.println("max:" + max);
-            System.out.println("min:" + min);
-        });
 
         itemNameKeyService.updateItemNameKeys(records);
         metaDataService.updateMetaData(records);
@@ -138,9 +128,10 @@ public class FileService {
                 stringBuffer.append(charArray, 0, numCharsRead);
             }
             String header = stringBuffer.toString();
+//            header = header.replace("?1", ArffUtils.genNominalTypeFromZeroTo(metaDataService.itemLength()));
             header = header.replace("?1", ArffUtils.genNominalTypeFromCollection(Arrays.asList(Constant.SIZES)));
             header = header.replace("?2", ArffUtils.genOneHotAttributesHeader(itemNameKeyService.getAttributeNames()));
-//            header = header.replace("?3", ArffUtils.genNominalTypeFromCollection(quantityRangeService.getIndexes()));
+//            header = header.replace("?4", ArffUtils.genNominalTypeFromCollection(quantityRangeService.getIndexes()));
             return header;
         } catch (IOException e) {
             System.out.println("Cannot read template");
@@ -173,19 +164,22 @@ public class FileService {
     }
 
     public File writePredictArff(String header) throws IOException {
-        int itemLength = metaDataService.itemLength();
-        List<Record> allCombinations = DataUtils.genDateFromNow(Constant.MONTH_PREDICTION_LENGTH + 1)
-            .stream()
-            .map(date -> IntStream.range(0, itemLength)
-                .mapToObj(item -> Arrays.stream(Constant.SIZES)
-                    .map(size -> new Record(date, String.valueOf(item), size, null))
+        List<MetaData.Item> items = metaDataService.getMetaData().getItems();
+        List<Record> allCombinations = DataUtils.genDateFromNow(Constant.MONTH_PREDICTION_LENGTH + 1).stream()
+            .map(date -> items.stream()
+                .map(item -> item.getSizeAndPrice().keySet().stream()
+                    .map(size -> new Record(date, item.getIndex(), item.getName(), size, null, null))
                     .collect(Collectors.toList())
                 ).flatMap(List::stream)
                 .collect(Collectors.toList())
-            ).flatMap(List::stream)
-            .collect(Collectors.toList());
-//        String content = header + ArffUtils.toArffRecords(allCombinations);
-        String content = header;
+                ).flatMap(List::stream)
+                .collect(Collectors.toList());
+
+        for (Record r: allCombinations) {
+            r.setActiveKeyAttributes(itemNameKeyService.getActivateKeys(r.getItemName()));
+        }
+
+        String content = header + ArffUtils.toArffRecords(allCombinations, itemNameKeyService.getAttributeNames());
         File result = writeReplaceFile(Constant.FILE_NAME_MAIN_PREDICT, content);
         return result;
     }

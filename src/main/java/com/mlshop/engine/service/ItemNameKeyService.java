@@ -81,17 +81,17 @@ public class ItemNameKeyService {
 
     public synchronized List<Record> updateItemNameKeys(List<Record> records) throws IOException {
         final ItemNameKey newKeys = new ItemNameKey(new ArrayList(getItemNameKey().getKeys()));
-        final Map<String, String> newKeyNameAndIndexes = new HashMap(getKeyNameAndAttributeNames());
+        final Map<String, String> newKeyNameAndAttributeNames = new HashMap(getKeyNameAndAttributeNames());
 
         for (Record record: records) {
             Set<String> keys = splitItemName(record.getItemName());
             record.setActiveKeyAttributes(new HashSet());
 
             for (String key: keys) {
-                String attributeName = newKeyNameAndIndexes.get(key);
+                String attributeName = newKeyNameAndAttributeNames.get(key);
                 if (attributeName == null) {
-                    attributeName = "keyName" + newKeyNameAndIndexes.size();
-                    newKeyNameAndIndexes.put(key, attributeName);
+                    attributeName = "keyName" + newKeyNameAndAttributeNames.size();
+                    newKeyNameAndAttributeNames.put(key, attributeName);
                     newKeys.getKeys().add(new OneHotAttributeMapping(attributeName, key));
                 }
                 record.getActiveKeyAttributes().add(attributeName);
@@ -99,6 +99,12 @@ public class ItemNameKeyService {
         }
         writeToFile(newKeys);
         return records;
+    }
+
+    public Set<String> getActivateKeys(String itemName) throws IOException {
+        final Map<String, String> newKeyNameAndAttributeNames = new HashMap(getKeyNameAndAttributeNames());
+        Set<String> keys = splitItemName(itemName);
+        return keys.stream().map(e -> newKeyNameAndAttributeNames.get(e)).collect(Collectors.toSet());
     }
 
     public int keyLength() throws IOException {

@@ -89,6 +89,7 @@ public class MetaDataService {
                 item = newItems.get(index);
             }
             item.getSizeAndPrice().put(record.getSize(), record.getUnitPrice());
+            record.setItemNameIndex(index);
         }
         MetaData newMetaData = new MetaData();
         newMetaData.setItems(newItems);

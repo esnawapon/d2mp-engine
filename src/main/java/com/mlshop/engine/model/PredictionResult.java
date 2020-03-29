@@ -17,7 +17,7 @@ public class PredictionResult {
         dates = new HashMap<>();
     }
 
-    public PredictionResult addRecord(Record record, MetaData metaData) {
+    public PredictionResult addRecord(Record record) {
         DateGroupPrediction dateGroup = dates.get(record.getDate());
         if (dateGroup == null) {
             dateGroup = new DateGroupPrediction();
@@ -30,10 +30,7 @@ public class PredictionResult {
         }
         SizeGroupPrediction sizeGroup = new SizeGroupPrediction();
         sizeGroup.totalQuantity = record.getQuantity().intValue();
-        sizeGroup.unitPrice = metaData.getItems()
-                .get(Integer.parseInt(record.getItemName()))
-                .getSizeAndPrice()
-                .get(record.getSize());
+        sizeGroup.unitPrice = record.getUnitPrice();
         itemGroup.sizes.put(record.getSize(), sizeGroup);
         return this;
     }

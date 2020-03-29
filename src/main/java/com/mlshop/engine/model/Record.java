@@ -8,6 +8,7 @@ import java.util.Set;
 public class Record {
     private String date;
     private String itemName;
+    private Integer itemNameIndex;
     private String size;
     private Double quantity;
     private Double unitPrice;
@@ -16,11 +17,13 @@ public class Record {
     private Integer quantityRange;
 
     public Record() {}
-    public Record(String date, String itemName, String size, Double quantity) {
+    public Record(String date, Integer itemNameIndex, String itemName, String size, Double quantity, Double unitPrice) {
         this.date = date;
+        this.itemNameIndex = itemNameIndex;
         this.itemName = itemName;
         this.size = size;
         this.quantity = quantity;
+        this.unitPrice = unitPrice;
     }
 
     public String getUniqueKey() {
