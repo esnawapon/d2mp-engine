@@ -1,10 +1,9 @@
 package com.mlshop.engine.service;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.mlshop.engine.Constant;
 import com.mlshop.engine.model.MetaData;
 import com.mlshop.engine.model.Record;
+import com.mlshop.engine.util.FileUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -25,12 +24,7 @@ public class MetaDataService {
     public void reloadResource() throws IOException {
         File file = new File(Constant.FILE_NAME_META_DATA);
         if (file.exists()) {
-            try (FileReader reader = new FileReader(Constant.FILE_NAME_META_DATA)) {
-                metaData = new Gson().fromJson(reader, MetaData.class);
-
-            } catch (IOException e) {
-                throw e;
-            }
+            metaData = FileUtils.readJsonFile(Constant.FILE_NAME_META_DATA, MetaData.class);
         } else {
             metaData = new MetaData();
         }
@@ -43,12 +37,7 @@ public class MetaDataService {
     }
 
     private void writeToFile(MetaData metaData) throws IOException {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        try (FileWriter writer = new FileWriter(Constant.FILE_NAME_META_DATA)) {
-            gson.toJson(metaData, writer);
-        } catch (IOException e) {
-            throw e;
-        }
+        FileUtils.writeReplaceJsonFile(Constant.FILE_NAME_META_DATA, metaData);
         reloadResource();
     }
 

@@ -7,6 +7,7 @@ import com.mlshop.engine.model.Record;
 import com.mlshop.engine.util.ArffUtils;
 import com.mlshop.engine.util.DataUtils;
 import com.mlshop.engine.util.ExcelUtils;
+import com.mlshop.engine.util.FileUtils;
 import com.mlshop.engine.util.StreamUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +20,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class FileService {
+public class ArffService {
     @Autowired
     MetaDataService metaDataService;
     @Autowired
     ItemNameKeyService itemNameKeyService;
     @Autowired
     QuantityRangeService quantityRangeService;
+    @Autowired
+    MonthlyReportService monthlyReportService;
 
     public String transformAll() throws IOException {
         String[] fileNames = new String[] {
@@ -55,6 +58,7 @@ public class FileService {
         String header = genArffHeader();
         File train = writeTrainArff(header, records);
         writePredictArff(header);
+        monthlyReportService.saveAll(records);
         return train.getName();
     }
 
@@ -141,26 +145,12 @@ public class FileService {
 
     private File writeTrainArff(String header, List<Record> records) throws IOException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss");
-        String fileName = "/temp-" + sdf.format(Calendar.getInstance().getTime()) + ".arff";
+        String fileName = "/train-" + sdf.format(Calendar.getInstance().getTime()) + ".arff";
         String filePath = Constant.DIR_NAME_ARFF + fileName;
 
         String content = header + ArffUtils.toArffRecords(records, itemNameKeyService.getAttributeNames());
-        File result = writeReplaceFile(filePath, content);
+        File result = FileUtils.writeReplaceFile(filePath, content);
         return result;
-    }
-
-    private File writeReplaceFile(String filePath, String content) throws IOException {
-        File file = new File(filePath);
-        if (!file.exists()) {
-            file.createNewFile();
-        }
-        try (FileWriter writer = new FileWriter(filePath, false)) {
-            writer.write(content);
-        } catch (IOException e) {
-            System.out.println("Cannot write " + filePath);
-            throw e;
-        }
-        return file;
     }
 
     public File writePredictArff(String header) throws IOException {
@@ -180,7 +170,7 @@ public class FileService {
         }
 
         String content = header + ArffUtils.toArffRecords(allCombinations, itemNameKeyService.getAttributeNames());
-        File result = writeReplaceFile(Constant.FILE_NAME_MAIN_PREDICT, content);
+        File result = FileUtils.writeReplaceFile(Constant.FILE_NAME_MAIN_PREDICT, content);
         return result;
     }
 }

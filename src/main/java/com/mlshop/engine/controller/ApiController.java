@@ -1,11 +1,10 @@
 package com.mlshop.engine.controller;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mlshop.engine.service.FileService;
-import com.mlshop.engine.service.ModelService;
+import com.mlshop.engine.service.ArffService;
+import com.mlshop.engine.service.PredictService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +14,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api")
 public class ApiController {
-    @Autowired private FileService fileService;
-    @Autowired private ModelService modelService;
+    @Autowired private ArffService arffService;
+    @Autowired private PredictService predictService;
 
     public ResponseEntity success(Object object) {
         return new ResponseEntity<>(object == null ? "null" : object, HttpStatus.OK);
@@ -24,24 +23,16 @@ public class ApiController {
 
     @GetMapping(path="/test")
     public ResponseEntity test() throws Exception {
-        String fileName = fileService.transformAll();
+        String fileName = arffService.transformAll();
         Map result = new HashMap();
         result.put("fileName", fileName);
         return success(result);
     }
 
     @GetMapping(path="/predict")
-    public ResponseEntity predict(@RequestParam String fileName) throws Exception {
-        return success(modelService.createModel(fileName));
+    public ResponseEntity predict() throws Exception {
+        return success(predictService.predict());
     }
-
-    @GetMapping(path="/load/predict")
-    public ResponseEntity loadThenPredict() throws Exception {
-        String fileName = fileService.transformAll();
-        return success(modelService.createModel(fileName));
-    }
-
-
 
     @GetMapping(path="")
     public ResponseEntity status() {

@@ -2,16 +2,29 @@ package com.mlshop.engine;
 
 public class Constant {
     public static final String DIR_NAME_MAIN = "/Users/es/mlshop2";
+
     public static final String DIR_NAME_ARFF = DIR_NAME_MAIN + "/arff";
-    public static final String DIR_NAME_MODEL = DIR_NAME_MAIN + "/model";
-    public static final String DIR_NAME_PREDICT = DIR_NAME_MAIN + "/predict";
-    public static final String DIR_NAME_MAPPING = DIR_NAME_MAIN + "/mapping";
     public static final String FILE_NAME_TEMPLATE = DIR_NAME_ARFF + "/template.arff";
+
+    public static final String DIR_NAME_MODEL = DIR_NAME_MAIN + "/model";
+    public static final String FILE_NAME_M5_MAIN_MODEL = DIR_NAME_MODEL + "/m5-main-model.model";
+
+    public static final String DIR_NAME_PREDICT = DIR_NAME_MAIN + "/predict";
+    public static final String FILE_NAME_MAIN_PREDICT = DIR_NAME_PREDICT + "/main-predict.arff";
+
+    public static final String DIR_NAME_MAPPING = DIR_NAME_MAIN + "/mapping";
     public static final String FILE_NAME_META_DATA = DIR_NAME_MAPPING + "/meta-data.json";
     public static final String FILE_NAME_ITEM_NAME_KEY = DIR_NAME_MAPPING + "/item-name-key.json";
     public static final String FILE_NAME_QUANTITY_RANGE = DIR_NAME_MAPPING + "/quantity-range.json";
-    public static final String FILE_NAME_MAIN_MODEL = DIR_NAME_MODEL + "/main-model.mlshop";
-    public static final String FILE_NAME_MAIN_PREDICT = DIR_NAME_PREDICT + "/main-predict.arff";
+
+    public static final String DIR_NAME_MONTHLY_REPORT = DIR_NAME_MAIN + "/monthly-report";
+    public static final String FILE_NAME_ALL_MONTHS_SUMMARY_JSON = DIR_NAME_MONTHLY_REPORT + "/all-months-summary.json";
+    public static final String FILE_NAME_ALL_MONTHS_SUMMARY_CSV = DIR_NAME_MONTHLY_REPORT + "/all-months-summary.csv";
+
+    public static final String[] CSV_HEADER_MONTHLY = new String[] {"item_index","item_name","size","unit_price","quantity","total_price"};
+    public static final String[] CSV_HEADER_ALL_MONTHS = new String[] {"month","total_quantity","total_price"};
+    public static final String[] CSV_HEADER_PREDICT = new String[] {"month","item_index","item_name","size","unit_price","predicted_total_quantity","total_price"};
+
     public static final String[] SIZES = new String[] {"s","m","l","xl","2xl","3xl","4xl"};
     public static final int MONTH_PREDICTION_LENGTH = 3;
 

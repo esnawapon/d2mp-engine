@@ -1,17 +1,14 @@
 package com.mlshop.engine.service;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.mlshop.engine.Constant;
 import com.mlshop.engine.model.ItemNameKey;
 import com.mlshop.engine.model.OneHotAttributeMapping;
 import com.mlshop.engine.model.Record;
+import com.mlshop.engine.util.FileUtils;
 import com.mlshop.engine.util.KeyMatchers;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,11 +28,7 @@ public class ItemNameKeyService {
     public void reloadResource() throws IOException {
         File file = new File(Constant.FILE_NAME_ITEM_NAME_KEY);
         if (file.exists()) {
-            try (FileReader reader = new FileReader(Constant.FILE_NAME_ITEM_NAME_KEY)) {
-                itemNameKey = new Gson().fromJson(reader, ItemNameKey.class);
-            } catch (IOException e) {
-                throw e;
-            }
+            itemNameKey = FileUtils.readJsonFile(Constant.FILE_NAME_ITEM_NAME_KEY, ItemNameKey.class);
         } else {
             itemNameKey = new ItemNameKey(new ArrayList());
         }
@@ -49,12 +42,7 @@ public class ItemNameKeyService {
     }
 
     private void writeToFile(ItemNameKey keys) throws IOException {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        try (FileWriter writer = new FileWriter(Constant.FILE_NAME_ITEM_NAME_KEY)) {
-            gson.toJson(keys, writer);
-        } catch (IOException e) {
-            throw e;
-        }
+        FileUtils.writeReplaceJsonFile(Constant.FILE_NAME_ITEM_NAME_KEY, keys);
         reloadResource();
     }
 

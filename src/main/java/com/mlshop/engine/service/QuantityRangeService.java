@@ -1,13 +1,12 @@
 package com.mlshop.engine.service;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mlshop.engine.Constant;
 import com.mlshop.engine.model.RangeConfig;
 import com.mlshop.engine.model.Record;
+import com.mlshop.engine.util.FileUtils;
 import org.springframework.stereotype.Service;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,11 +15,7 @@ import java.util.stream.Collectors;
 public class QuantityRangeService {
     private List<RangeConfig> configs;
     public void reloadResource() throws IOException {
-        try (FileReader reader = new FileReader(Constant.FILE_NAME_QUANTITY_RANGE)) {
-            configs = new Gson().fromJson(reader, new TypeToken<List<RangeConfig>>() {}.getType());
-        } catch (IOException e) {
-            throw e;
-        }
+        configs = FileUtils.readJsonFile(Constant.FILE_NAME_QUANTITY_RANGE, new TypeToken<List<RangeConfig>>() {}.getType());
     }
 
     public List<RangeConfig> getConfigs() throws IOException {
